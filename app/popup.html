@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Page Scraper</title>
+  <style>
+    body {
+      width: 400px; /* Adjust width to fit larger content */
+      max-height: 600px; /* Adjust max height for scrolling */
+      overflow-y: auto; /* Enable scrolling */
+    }
+    #scrapeButton {
+      margin: 20px;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    #result {
+      white-space: pre-wrap; /* Preserve formatting */
+    }
+  </style>
+</head>
+<body>
+  <button id="scrapeButton">Scrape Page</button>
+  <div id="result"></div>
+  <script src="dist/popup.js"></script>
+</body>
+</html>
+
