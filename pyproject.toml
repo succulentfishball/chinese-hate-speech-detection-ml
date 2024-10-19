@@ -1,0 +1,22 @@
+[project]
+name = "chinese-hate-speech-detection-ml"
+version = "1.0.0"
+description = "A machine learning model to detect hate speech in Chinese text."
+readme = "README.md"
+authors = [
+    { name = "Derek Ng", email = "derek.ng23@imperial.ac.uk" },
+    { name = "Koh Pi Rong", email = "pi.koh23@imperial.ac.uk"},
+    { name = "Zechariah Yeung", email = "zechariah.yeung23@imperial.ac.uk" },
+    { name = "Matthew Lee", email = "matthew.e.lee23@imperial.ac.uk"},
+    { name = "Joel Ng", email = "zhi-ming.ng22@imperial.ac.uk" },
+    { name = "Ezekiel Lim", email = "ezekiel.lim24@imperial.ac.uk"},
+]
+
+dependencies = [
+    "torch == 2.5.0",
+    "transformers == 4.45.2"
+]
+requires-python = ">=3.9"
+
+[tool.setuptools]
+py-modules = []
