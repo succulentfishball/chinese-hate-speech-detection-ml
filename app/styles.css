@@ -81,3 +81,10 @@ body {
 .box-red {
     color: #ff0000;
 }
+
+.blackout {
+    background-color: black;
+    color: black; /* Hide the text color */
+    text-decoration: line-through; /* Optional: Add strikethrough */
+  }
+  
