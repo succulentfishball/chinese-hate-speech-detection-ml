@@ -6,8 +6,7 @@
     "permissions": [
       "tabs",
       "activeTab",
-      "scripting",
-      "http://148.100.108.220:80/*"
+      "scripting"
     ],
     "host_permissions": ["http://148.100.108.220:80/*"],
     "action": {

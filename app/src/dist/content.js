@@ -12,8 +12,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 function scrapeAndFilterChinese() {
     console.log('Scraping started!');
     const bodyText = document.documentElement.outerHTML; // Get the entire HTML content
-    // Regex to match sequences of Chinese characters, including specific punctuation
-    const chineseRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]+/g; // Match sequences of Chinese characters
+    // This regex matches sequences containing at least five Chinese characters
+    // and specified punctuation.
+    // Breakdown:
+    // - (?=(?:[^u4e00-u9fff]*[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]{5,})): Positive lookahead to ensure at least five Chinese characters.
+    // - ([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002，。]+): Captures five or more Chinese characters and specified punctuation.
+    const chineseRegex = /(?=(?:[^u4E00-u9FFF]*[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]{5,}))(?:[^u4E00-u9FFF]*)([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002，。]+)/g;
+    // const chineseRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]+/g; // Match sequences of Chinese characters
     const results = bodyText.match(chineseRegex) || []; // Match Chinese character sequences
     if (results.length > 0) {
         const resultArray = results.slice();
@@ -67,18 +72,12 @@ function sendData(result) {
         }
     });
 }
-// function scrapeAndFilterChinese(): string {
-//   // Scrape the entire HTML content
-//   const htmlContent = document.documentElement.outerHTML;
-//   // Regular expression to match Chinese characters
-//   const chineseCharRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]/g;
-//   // Extract only Chinese characters from the HTML content
-//   const chineseCharacters = htmlContent.match(chineseCharRegex)?.join('') || '';
-//   return chineseCharacters;
-// }
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
+}
 const blackoutWords = (node, wordToCensor) => {
     // Create a regex pattern from the word to censor, escaping special characters
-    const regex = new RegExp(`(${wordToCensor})`, 'gi'); // 'gi' for global and case-insensitive matching
+    const regex = new RegExp(`(${escapeRegExp(wordToCensor)})`, 'gi'); // 'gi' for global and case-insensitive matching
     if (node.nodeType === Node.TEXT_NODE) {
         const text = node.nodeValue || '';
         if (regex.test(text)) {
@@ -107,42 +106,23 @@ const blackoutWords = (node, wordToCensor) => {
         node.childNodes.forEach(childNode => blackoutWords(childNode, wordToCensor));
     }
 };
-// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-//   if (request.action === 'blackout') {
-//     const wordToBlackout = request.word;
-//     console.log(wordToBlackout);
-//     const regex = new RegExp(`(${wordToBlackout})`, 'gi'); // Word boundary regex
-//     const blackoutWords = (node: Node) => {
-//       if (node.nodeType === Node.TEXT_NODE) {
-//         const text = node.nodeValue || '';
-//         if (regex.test(text)) {
-//           const span = document.createElement('span');
-//           // Split the text and wrap the target word with a span
-//           const parts = text.split(regex);
-//           parts.forEach(part => {
-//             if (regex.test(part)) {
-//               const blackoutSpan = document.createElement('span');
-//               blackoutSpan.style.backgroundColor = 'black';
-//               blackoutSpan.style.color = 'black';
-//               blackoutSpan.style.userSelect = 'none';
-//               blackoutSpan.textContent = part;
-//               span.appendChild(blackoutSpan);
-//             } else {
-//               span.appendChild(document.createTextNode(part));
-//             }
-//           });
-//           if (node.parentNode) {
-//             node.parentNode.replaceChild(span, node);
-//           }
-//         }
-//       } else if (node.nodeType === Node.ELEMENT_NODE) {
-//         node.childNodes.forEach(blackoutWords);
-//       }
-//     };
-//     blackoutWords(document.body);
-//     sendResponse({ status: "Blackout executed" });
-//   }
-// });
+// Function to handle URL changes
+const handleUrlChange = () => {
+    console.log('URL changed to:', window.location.href);
+};
+// Override pushState and replaceState to detect URL changes
+const originalPushState = history.pushState;
+const originalReplaceState = history.replaceState;
+history.pushState = function (data, unused, url) {
+    originalPushState.call(this, data, unused, url); // Call the original pushState
+    handleUrlChange(); // Call your URL change handler
+};
+history.replaceState = function (data, unused, url) {
+    originalReplaceState.call(this, data, unused, url); // Call the original replaceState
+    handleUrlChange(); // Call your URL change handler
+};
+// Listen for popstate events (for back/forward navigation)
+window.addEventListener('popstate', handleUrlChange);
 // Function to check if the user has scrolled near the bottom of the page
 // function checkScroll() {
 //   const scrollPosition = window.scrollY + window.innerHeight;
@@ -159,6 +139,6 @@ function onPageLoad() {
     // Set a timeout to delay the scraping function
     setTimeout(() => {
         scrapeAndFilterChinese();
-    }, 2000); // Adjust the delay (in milliseconds) as needed
+    }, 2000); // delay to allow the page to fully load
 }
 onPageLoad(); // Call the onPageLoad function when the page is fully loaded

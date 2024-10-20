@@ -4,8 +4,17 @@ function scrapeAndFilterChinese() {
   console.log('Scraping started!');
 
   const bodyText = document.documentElement.outerHTML; // Get the entire HTML content
-  // Regex to match sequences of Chinese characters, including specific punctuation
-  const chineseRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]+/g; // Match sequences of Chinese characters
+  // This regex matches sequences containing at least five Chinese characters
+  // and specified punctuation.
+
+  // Breakdown:
+  // - (?=(?:[^u4e00-u9fff]*[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]{5,})): Positive lookahead to ensure at least five Chinese characters.
+  // - ([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002，。]+): Captures five or more Chinese characters and specified punctuation.
+
+  const chineseRegex = /(?=(?:[^u4E00-u9FFF]*[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]{5,}))(?:[^u4E00-u9FFF]*)([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002，。]+)/g;
+
+
+  // const chineseRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]+/g; // Match sequences of Chinese characters
 
   const results = bodyText.match(chineseRegex) || []; // Match Chinese character sequences
 
@@ -63,9 +72,13 @@ async function sendData(result: string[]): Promise<number[]> {
   }
 }
 
+function escapeRegExp(string: string) {
+  return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Escape special characters
+}
+
 const blackoutWords = (node: Node, wordToCensor: string) => {
   // Create a regex pattern from the word to censor, escaping special characters
-  const regex = new RegExp(`(${wordToCensor})`, 'gi'); // 'gi' for global and case-insensitive matching
+  const regex = new RegExp(`(${escapeRegExp(wordToCensor)})`, 'gi'); // 'gi' for global and case-insensitive matching
 
   if (node.nodeType === Node.TEXT_NODE) {
       const text = node.nodeValue || '';
@@ -95,6 +108,28 @@ const blackoutWords = (node: Node, wordToCensor: string) => {
       node.childNodes.forEach(childNode => blackoutWords(childNode, wordToCensor));
   }
 };
+
+// Function to handle URL changes
+const handleUrlChange = (): void => {
+  console.log('URL changed to:', window.location.href);
+};
+
+// Override pushState and replaceState to detect URL changes
+const originalPushState = history.pushState;
+const originalReplaceState = history.replaceState;
+
+history.pushState = function(data: any, unused: string, url?: string | URL | null): void {
+  originalPushState.call(this, data, unused, url); // Call the original pushState
+  handleUrlChange(); // Call your URL change handler
+};
+
+history.replaceState = function(data: any, unused: string, url?: string | URL | null): void {
+  originalReplaceState.call(this, data, unused, url); // Call the original replaceState
+  handleUrlChange(); // Call your URL change handler
+};
+
+// Listen for popstate events (for back/forward navigation)
+window.addEventListener('popstate', handleUrlChange);
 
 // Function to check if the user has scrolled near the bottom of the page
 // function checkScroll() {
