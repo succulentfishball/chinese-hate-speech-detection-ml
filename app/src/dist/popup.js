@@ -54,3 +54,15 @@ var _a;
 //   const chineseCharacters = htmlContent.match(chineseCharRegex)?.join('') || '';
 //   return chineseCharacters;
 // }
+window.addEventListener("DOMContentLoaded", (event) => {
+    document.getElementById("button").addEventListener("click", function() {
+        if (document.getElementById("button").style.backgroundColor == "green"){
+            location.reload();
+        }
+    	
+        // Change the logo to the "clean and safe" one
+        document.getElementById("censorLogo").src = "good_website.webp";
+	    document.getElementById("button").textContent = "Page Moderated!";
+	    document.getElementById("button").style.backgroundColor = "green";
+	});
+});
