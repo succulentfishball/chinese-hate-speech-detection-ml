@@ -17,62 +17,26 @@ function scrapeAndFilterChinese() {
     const results = bodyText.match(chineseRegex) || []; // Match Chinese character sequences
     if (results.length > 0) {
         const resultArray = results.slice();
-        const test = ["\u9ed1\u4eba\u559c\u6b22\u5077\u4e1c\u897f"];
         // console.log(results);
-        sendData(test);
+        sendData(resultArray)
+            .then(response => {
+            console.log("API response received:", response);
+            for (let i = 0; i < response.length; i++) {
+                if (response[i] === 1) {
+                    console.log(resultArray[i]);
+                    blackoutWords(document.body, resultArray[i]);
+                }
+            }
+        })
+            .catch(error => {
+            console.error("Error:", error);
+        });
     }
     else {
         console.log('No Chinese characters found.');
     }
 }
 ;
-// function scrapeAndFilterChinese(): string {
-//   // Scrape the entire HTML content
-//   const htmlContent = document.documentElement.outerHTML;
-//   // Regular expression to match Chinese characters
-//   const chineseCharRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]/g;
-//   // Extract only Chinese characters from the HTML content
-//   const chineseCharacters = htmlContent.match(chineseCharRegex)?.join('') || '';
-//   return chineseCharacters;
-// }
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'blackout') {
-        const wordToBlackout = request.word;
-        console.log(wordToBlackout);
-        const regex = new RegExp(`(${wordToBlackout})`, 'gi'); // Word boundary regex
-        const blackoutWords = (node) => {
-            if (node.nodeType === Node.TEXT_NODE) {
-                const text = node.nodeValue || '';
-                if (regex.test(text)) {
-                    const span = document.createElement('span');
-                    // Split the text and wrap the target word with a span
-                    const parts = text.split(regex);
-                    parts.forEach(part => {
-                        if (regex.test(part)) {
-                            const blackoutSpan = document.createElement('span');
-                            blackoutSpan.style.backgroundColor = 'black';
-                            blackoutSpan.style.color = 'black';
-                            blackoutSpan.style.userSelect = 'none';
-                            blackoutSpan.textContent = part;
-                            span.appendChild(blackoutSpan);
-                        }
-                        else {
-                            span.appendChild(document.createTextNode(part));
-                        }
-                    });
-                    if (node.parentNode) {
-                        node.parentNode.replaceChild(span, node);
-                    }
-                }
-            }
-            else if (node.nodeType === Node.ELEMENT_NODE) {
-                node.childNodes.forEach(blackoutWords);
-            }
-        };
-        blackoutWords(document.body);
-        sendResponse({ status: "Blackout executed" });
-    }
-});
 function sendData(result) {
     return __awaiter(this, void 0, void 0, function* () {
         const url = "http://148.100.108.220:80/classify";
@@ -84,22 +48,101 @@ function sendData(result) {
             const response = yield fetch(url, {
                 method: "POST",
                 headers: {
-                    scheme: 'http',
                     "Content-Type": "application/json"
                 },
-                body: "{\"texts\": [\"黑人喜欢偷东西\"]}"
+                body: JSON.stringify(data)
             });
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            const result = yield response.json();
-            console.log("Response from API:", result);
+            const apiResult = yield response.json();
+            // console.log("Response from API:", apiResult);
+            // Extracting the result array from the API response
+            const intArray = apiResult.results; // Access the 'result' property directly
+            return intArray;
         }
         catch (error) {
             console.error("Error making POST request:", error);
+            throw error;
         }
     });
 }
+// function scrapeAndFilterChinese(): string {
+//   // Scrape the entire HTML content
+//   const htmlContent = document.documentElement.outerHTML;
+//   // Regular expression to match Chinese characters
+//   const chineseCharRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]/g;
+//   // Extract only Chinese characters from the HTML content
+//   const chineseCharacters = htmlContent.match(chineseCharRegex)?.join('') || '';
+//   return chineseCharacters;
+// }
+const blackoutWords = (node, wordToCensor) => {
+    // Create a regex pattern from the word to censor, escaping special characters
+    const regex = new RegExp(`(${wordToCensor})`, 'gi'); // 'gi' for global and case-insensitive matching
+    if (node.nodeType === Node.TEXT_NODE) {
+        const text = node.nodeValue || '';
+        if (regex.test(text)) {
+            const span = document.createElement('span');
+            // Split the text and wrap the target word with a span
+            const parts = text.split(regex);
+            parts.forEach(part => {
+                if (regex.test(part)) {
+                    const blackoutSpan = document.createElement('span');
+                    blackoutSpan.style.backgroundColor = 'black';
+                    blackoutSpan.style.color = 'black';
+                    blackoutSpan.style.userSelect = 'none';
+                    blackoutSpan.textContent = part;
+                    span.appendChild(blackoutSpan);
+                }
+                else {
+                    span.appendChild(document.createTextNode(part));
+                }
+            });
+            if (node.parentNode) {
+                node.parentNode.replaceChild(span, node);
+            }
+        }
+    }
+    else if (node.nodeType === Node.ELEMENT_NODE) {
+        node.childNodes.forEach(childNode => blackoutWords(childNode, wordToCensor));
+    }
+};
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   if (request.action === 'blackout') {
+//     const wordToBlackout = request.word;
+//     console.log(wordToBlackout);
+//     const regex = new RegExp(`(${wordToBlackout})`, 'gi'); // Word boundary regex
+//     const blackoutWords = (node: Node) => {
+//       if (node.nodeType === Node.TEXT_NODE) {
+//         const text = node.nodeValue || '';
+//         if (regex.test(text)) {
+//           const span = document.createElement('span');
+//           // Split the text and wrap the target word with a span
+//           const parts = text.split(regex);
+//           parts.forEach(part => {
+//             if (regex.test(part)) {
+//               const blackoutSpan = document.createElement('span');
+//               blackoutSpan.style.backgroundColor = 'black';
+//               blackoutSpan.style.color = 'black';
+//               blackoutSpan.style.userSelect = 'none';
+//               blackoutSpan.textContent = part;
+//               span.appendChild(blackoutSpan);
+//             } else {
+//               span.appendChild(document.createTextNode(part));
+//             }
+//           });
+//           if (node.parentNode) {
+//             node.parentNode.replaceChild(span, node);
+//           }
+//         }
+//       } else if (node.nodeType === Node.ELEMENT_NODE) {
+//         node.childNodes.forEach(blackoutWords);
+//       }
+//     };
+//     blackoutWords(document.body);
+//     sendResponse({ status: "Blackout executed" });
+//   }
+// });
 // Function to check if the user has scrolled near the bottom of the page
 // function checkScroll() {
 //   const scrollPosition = window.scrollY + window.innerHeight;
