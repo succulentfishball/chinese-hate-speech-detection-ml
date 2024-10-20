@@ -1,16 +1,32 @@
-# Chinese Hate Speech Detection Model
+# Mandarin Hate Speech Detection Chrome Extension
 
-## Project Overview
-[CITE ORIGINAL MODEL AUTHOR HERE]
+This Chrome extension scrapes websites for Mandarin text, sends the text to a machine learning model for inference, and censors any words or sentences detected as hate speech. The goal is to promote a safer online environment by identifying and masking harmful content.
 
-### Installation Guide
+## Features
+- Scrapes all Mandarin text from the currently visited webpage.
+- Runs real-time inference to detect hate speech in the Mandarin language using a machine learning model.
+- Automatically highlights or censors detected hate speech.
+- Works seamlessly in the background with minimal user interaction.
 
-#### Model
 
-Our model was hosted on the IBM LinuxOne virtual machine, where an API endpoint was exposed using Flask. 
+## How It Works
+1. **Scraping**: The extension extracts all Chinese text from the webpage.
+2. **Inference**: It sends the text to an API hosting a hate speech detection model. API is hosted on LinuxONE Virtual Machine.
+3. **Detection**: Virtual Machine runs the inference on its model, based off COLD dataset, and sends back hate speech detected.
+4. **Highlighting/Censoring**: User's machine will receive hate speech data, then executes the censoring of these words on the webpage.
 
-The server receives an input json string with the string array of the phrases to query in the format of ```{text: ["A", "B", "C"]}```. It then outputs a json string with an integer array in the format of ```{results: [0, 1, 0]}```, where a HIGH value represents a hateful comment.
+## Demo
 
-#### Extension
+Here is an example of how the extension works on a sample webpage:
 
-The unpacked extension folder (```app/src```) was loaded in ```chrome://extensions/``` under _Developer Mode_.
+insert screenshot here
+
+
+### Prerequisites
+- Google Chrome browser (latest version)
+
+### Installation & Usage
+
+1. Clone this repository to your local machine:
+   ```bash
+   git clone https://github.com/succulentfishball/chinese-hate-speech-detection-ml.git

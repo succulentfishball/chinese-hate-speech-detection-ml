@@ -2,7 +2,8 @@
 var _a;
 // Ensure to check for null before adding the event listener
 (_a = document.getElementById('blackoutButton')) === null || _a === void 0 ? void 0 : _a.addEventListener('click', () => {
-    const blackoutWordInput = document.getElementById('blackoutWordInput');
+event.preventDefault();    
+const blackoutWordInput = document.getElementById('blackoutWordInput');
     // Query for active tabs
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         // Check if there is at least one active tab
@@ -23,21 +24,20 @@ var _a;
         }
     });
 });
+
+
 window.addEventListener("DOMContentLoaded", (event) => {
-    const button = document.getElementById("button");
-    const censorLogo = document.getElementById("censorLogo");
+    event.preventDefault();
+    const button = document.getElementById("submit");
     if (button) {
         button.addEventListener("click", function () {
-            // Check if the button's background color is green
             if (button.style.backgroundColor === "green") {
-                location.reload();
+                button.textContent = "Moderate Content";
+                button.style.backgroundColor = "red";
+            } else {
+	    	button.textContent = "Page Moderated";
+                button.style.backgroundColor = "green";
             }
-            // Change the logo to the "clean and safe" one
-            if (censorLogo) {
-                censorLogo.src = "good_website.webp";
-            }
-            button.textContent = "Page Moderated!";
-            button.style.backgroundColor = "green";
         });
     }
 });
