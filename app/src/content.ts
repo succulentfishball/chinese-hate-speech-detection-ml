@@ -72,7 +72,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 async function sendData(result: string[]) {
-  const url = "http://148.100.108.220:8080/classify";
+  const url = "http://148.100.108.220:80/classify";
   const data = {
       texts: result
   };

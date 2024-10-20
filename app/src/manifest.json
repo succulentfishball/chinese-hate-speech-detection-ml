@@ -7,9 +7,9 @@
       "tabs",
       "activeTab",
       "scripting",
-      "http://148.100.108.220:8080/*"
+      "http://148.100.108.220:80/*"
     ],
-    "host_permissions": ["http://148.100.108.220:8080/*"],
+    "host_permissions": ["http://148.100.108.220:80/*"],
     "action": {
       "default_popup": "popup.html",
       "default_icon": {

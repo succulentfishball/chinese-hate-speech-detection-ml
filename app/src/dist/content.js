@@ -75,7 +75,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 function sendData(result) {
     return __awaiter(this, void 0, void 0, function* () {
-        const url = "http://148.100.108.220:8080/classify";
+        const url = "http://148.100.108.220:80/classify";
         const data = {
             texts: result
         };
