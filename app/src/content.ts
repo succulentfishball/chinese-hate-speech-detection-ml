@@ -1,6 +1,26 @@
-// import config from './config.json';
+function run() {
+  const filteredArray = scrapeAndFilterChinese();
+  console.log('Filtered array:', filteredArray);
+  if (filteredArray.length > 0) {
+    sendData(filteredArray)
+    .then(response => {
+        console.log("API response received:", response);
+        for (let i = 0; i < response.length; i++) {
+          if (response[i] === 1) {
+            console.log(filteredArray[i]);
+            blackoutWords(document.body, filteredArray[i]);
+          }
+      }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+  } else {
+    console.log('No Chinese characters found.');
+  }
+};
 
-function scrapeAndFilterChinese() {
+function scrapeAndFilterChinese(): string[] {
   console.log('Scraping started!');
 
   const bodyText = document.documentElement.outerHTML; // Get the entire HTML content
@@ -18,24 +38,14 @@ function scrapeAndFilterChinese() {
 
   const results = bodyText.match(chineseRegex) || []; // Match Chinese character sequences
 
+  
   if (results.length > 0) {
-    const resultArray: string[] = results.slice();
-    // console.log(results);
-    sendData(resultArray)
-    .then(response => {
-        console.log("API response received:", response);
-        for (let i = 0; i < response.length; i++) {
-          if (response[i] === 1) {
-            console.log(resultArray[i]);
-            blackoutWords(document.body, resultArray[i]);
-          }
-      }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
-  } else {
-    console.log('No Chinese characters found.');
+    const filteredArray = results.slice();
+    return filteredArray;
+  }
+  else {
+    const filteredArray: string[] = [];
+    return filteredArray;
   }
 };
 
@@ -44,7 +54,6 @@ async function sendData(result: string[]): Promise<number[]> {
   const data = {
       texts: result
   };
-  console.log(JSON.stringify(data));
 
   try {
       const response = await fetch(url, {
@@ -132,24 +141,24 @@ history.replaceState = function(data: any, unused: string, url?: string | URL | 
 window.addEventListener('popstate', handleUrlChange);
 
 // Function to check if the user has scrolled near the bottom of the page
-// function checkScroll() {
-//   const scrollPosition = window.scrollY + window.innerHeight;
-//   const documentHeight = document.documentElement.scrollHeight;
+function checkScroll() {
+  const scrollPosition = window.scrollY + window.innerHeight;
+  const documentHeight = document.documentElement.scrollHeight;
 
-//   // If the user has scrolled near the bottom, run the scraping function
-//   if (scrollPosition >= documentHeight - 50) { // Adjust the threshold as needed
-//     scrapeAndFilterChinese();
-//   }
-// }
+  // If the user has scrolled near the bottom, run the scraping function
+  if (scrollPosition >= documentHeight - 50) { // Adjust the threshold as needed
+    run();
+  }
+}
 
 // Add a scroll event listener to the window
-// window.addEventListener('scroll', checkScroll);
+window.addEventListener('scroll', checkScroll);
 
 // Function to be called when the page is fully loaded
 function onPageLoad() {
   // Set a timeout to delay the scraping function
   setTimeout(() => {
-    scrapeAndFilterChinese();
+    run();
   }, 2000); // delay to allow the page to fully load
 }
 

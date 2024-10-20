@@ -1,5 +1,4 @@
 "use strict";
-// import config from './config.json';
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -9,27 +8,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-function scrapeAndFilterChinese() {
-    console.log('Scraping started!');
-    const bodyText = document.documentElement.outerHTML; // Get the entire HTML content
-    // This regex matches sequences containing at least five Chinese characters
-    // and specified punctuation.
-    // Breakdown:
-    // - (?=(?:[^u4e00-u9fff]*[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]{5,})): Positive lookahead to ensure at least five Chinese characters.
-    // - ([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002，。]+): Captures five or more Chinese characters and specified punctuation.
-    const chineseRegex = /(?=(?:[^u4E00-u9FFF]*[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]{5,}))(?:[^u4E00-u9FFF]*)([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002，。]+)/g;
-    // const chineseRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]+/g; // Match sequences of Chinese characters
-    const results = bodyText.match(chineseRegex) || []; // Match Chinese character sequences
-    if (results.length > 0) {
-        const resultArray = results.slice();
-        // console.log(results);
-        sendData(resultArray)
+function run() {
+    const filteredArray = scrapeAndFilterChinese();
+    console.log('Filtered array:', filteredArray);
+    if (filteredArray.length > 0) {
+        sendData(filteredArray)
             .then(response => {
             console.log("API response received:", response);
             for (let i = 0; i < response.length; i++) {
                 if (response[i] === 1) {
-                    console.log(resultArray[i]);
-                    blackoutWords(document.body, resultArray[i]);
+                    console.log(filteredArray[i]);
+                    blackoutWords(document.body, filteredArray[i]);
                 }
             }
         })
@@ -42,13 +31,33 @@ function scrapeAndFilterChinese() {
     }
 }
 ;
+function scrapeAndFilterChinese() {
+    console.log('Scraping started!');
+    const bodyText = document.documentElement.outerHTML; // Get the entire HTML content
+    // This regex matches sequences containing at least five Chinese characters
+    // and specified punctuation.
+    // Breakdown:
+    // - (?=(?:[^u4e00-u9fff]*[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]{5,})): Positive lookahead to ensure at least five Chinese characters.
+    // - ([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002，。]+): Captures five or more Chinese characters and specified punctuation.
+    const chineseRegex = /(?=(?:[^u4E00-u9FFF]*[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF]{5,}))(?:[^u4E00-u9FFF]*)([\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002，。]+)/g;
+    // const chineseRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]+/g; // Match sequences of Chinese characters
+    const results = bodyText.match(chineseRegex) || []; // Match Chinese character sequences
+    if (results.length > 0) {
+        const filteredArray = results.slice();
+        return filteredArray;
+    }
+    else {
+        const filteredArray = [];
+        return filteredArray;
+    }
+}
+;
 function sendData(result) {
     return __awaiter(this, void 0, void 0, function* () {
         const url = "http://148.100.108.220:80/classify";
         const data = {
             texts: result
         };
-        console.log(JSON.stringify(data));
         try {
             const response = yield fetch(url, {
                 method: "POST",
@@ -124,21 +133,21 @@ history.replaceState = function (data, unused, url) {
 // Listen for popstate events (for back/forward navigation)
 window.addEventListener('popstate', handleUrlChange);
 // Function to check if the user has scrolled near the bottom of the page
-// function checkScroll() {
-//   const scrollPosition = window.scrollY + window.innerHeight;
-//   const documentHeight = document.documentElement.scrollHeight;
-//   // If the user has scrolled near the bottom, run the scraping function
-//   if (scrollPosition >= documentHeight - 50) { // Adjust the threshold as needed
-//     scrapeAndFilterChinese();
-//   }
-// }
+function checkScroll() {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+    // If the user has scrolled near the bottom, run the scraping function
+    if (scrollPosition >= documentHeight - 50) { // Adjust the threshold as needed
+        run();
+    }
+}
 // Add a scroll event listener to the window
-// window.addEventListener('scroll', checkScroll);
+window.addEventListener('scroll', checkScroll);
 // Function to be called when the page is fully loaded
 function onPageLoad() {
     // Set a timeout to delay the scraping function
     setTimeout(() => {
-        scrapeAndFilterChinese();
+        run();
     }, 2000); // delay to allow the page to fully load
 }
 onPageLoad(); // Call the onPageLoad function when the page is fully loaded
