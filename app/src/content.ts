@@ -137,6 +137,21 @@ history.replaceState = function(data: any, unused: string, url?: string | URL | 
   handleUrlChange(); // Call your URL change handler
 };
 
+// Function to load the button state from storage
+const getState = (): Promise<string | null> => {
+  return new Promise((resolve) => {
+      chrome.storage.local.get("buttonState", (data) => {
+          if (data.buttonState) {
+              const { color } = data.buttonState; // Get only the color
+              resolve(color); // Resolve with the color
+          } else {
+              resolve(null); // Return null if no state is found
+          }
+      });
+  });
+};
+
+
 // Listen for popstate events (for back/forward navigation)
 window.addEventListener('popstate', handleUrlChange);
 
@@ -147,9 +162,20 @@ function checkScroll() {
 
   // If the user has scrolled near the bottom, run the scraping function
   if (scrollPosition >= documentHeight - 50) { // Adjust the threshold as needed
-    run();
+    getState().then((state) => {
+      if (state && state === 'green' || !state) {
+        run();
+      }
+    });
   }
 }
+
+// run function when moderated button is enabled.
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.action === 'runFunction') {
+      run();
+  }
+});
 
 // Add a scroll event listener to the window
 window.addEventListener('scroll', checkScroll);
@@ -158,7 +184,11 @@ window.addEventListener('scroll', checkScroll);
 function onPageLoad() {
   // Set a timeout to delay the scraping function
   setTimeout(() => {
-    run();
+    getState().then((state) => {
+      if (state && state === 'green' || !state) {
+        run();
+      }
+    });
   }, 2000); // delay to allow the page to fully load
 }
 

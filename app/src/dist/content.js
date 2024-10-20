@@ -130,6 +130,20 @@ history.replaceState = function (data, unused, url) {
     originalReplaceState.call(this, data, unused, url); // Call the original replaceState
     handleUrlChange(); // Call your URL change handler
 };
+// Function to load the button state from storage
+const getState = () => {
+    return new Promise((resolve) => {
+        chrome.storage.local.get("buttonState", (data) => {
+            if (data.buttonState) {
+                const { color } = data.buttonState; // Get only the color
+                resolve(color); // Resolve with the color
+            }
+            else {
+                resolve(null); // Return null if no state is found
+            }
+        });
+    });
+};
 // Listen for popstate events (for back/forward navigation)
 window.addEventListener('popstate', handleUrlChange);
 // Function to check if the user has scrolled near the bottom of the page
@@ -138,16 +152,32 @@ function checkScroll() {
     const documentHeight = document.documentElement.scrollHeight;
     // If the user has scrolled near the bottom, run the scraping function
     if (scrollPosition >= documentHeight - 50) { // Adjust the threshold as needed
-        run();
+        getState().then((state) => {
+            if (state && state === 'green' || !state) {
+                run();
+            }
+        });
     }
 }
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'runFunction') {
+        // Call your function here
+        run();
+        // Optionally, send a response back
+        sendResponse({ status: "Function executed" });
+    }
+});
 // Add a scroll event listener to the window
 window.addEventListener('scroll', checkScroll);
 // Function to be called when the page is fully loaded
 function onPageLoad() {
     // Set a timeout to delay the scraping function
     setTimeout(() => {
-        run();
+        getState().then((state) => {
+            if (state && state === 'green' || !state) {
+                run();
+            }
+        });
     }, 2000); // delay to allow the page to fully load
 }
 onPageLoad(); // Call the onPageLoad function when the page is fully loaded
