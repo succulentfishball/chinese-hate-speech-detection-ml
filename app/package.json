@@ -1,4 +1,11 @@
 {
+<<<<<<< HEAD
+  "devDependencies": {
+    "@types/chrome": "^0.0.278"
+  },
+  "dependencies": {
+    "typescript": "^5.6.3"
+=======
   "name": "sigma-tech",
   "version": "1.0.0",
   "main": "popup.js",
@@ -19,5 +26,6 @@
   "dependencies": {
     "body-parser": "^1.20.3",
     "express": "^4.21.1"
+>>>>>>> main
   }
 }

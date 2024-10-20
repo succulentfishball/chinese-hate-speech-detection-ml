@@ -1,0 +1,17 @@
+{
+  "name": "sigma-tech",
+  "version": "1.0.0",
+  "description": "",
+  "main": "popup.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/chrome": "^0.0.270",
+    "chrome-types": "^0.1.301",
+    "typescript": "^5.5.4"
+  }
+}
