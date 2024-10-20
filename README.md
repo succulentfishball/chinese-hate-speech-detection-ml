@@ -20,4 +20,4 @@ This Chrome extension scrapes websites for Mandarin text, sends the text to a ma
 
 1. Clone this repository to your local machine:
    ```bash
-   git clone https://github.com/yourusername/hate-speech-detection-extension.git
+   git clone https://github.com/succulentfishball/chinese-hate-speech-detection-ml.git
