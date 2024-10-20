@@ -7,27 +7,82 @@
       width: 400px; /* Adjust width to fit larger content */
       max-height: 600px; /* Adjust max height for scrolling */
       overflow-y: auto; /* Enable scrolling */
+      background-color: #c9c7c7; /* Medium gray background */
+      color: #f0f0f0; /* Off-white text for contrast */
     }
-    #scrapeButton {
-      margin: 20px;
-      padding: 10px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+
     #result {
       white-space: pre-wrap; /* Preserve formatting */
     }
+
+    #content {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      font-family: Helvetica, sans-serif;
+      background-color: #ff3333;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 15px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    button:hover {
+      background-color: #cc0000;
+    }
+
+    .censored {
+      background-color: black;
+      color: black;
+      text-decoration: none;
+    }
+
+    #logoContainer {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    #censorLogo {
+      max-width: 200px;
+      height: auto;
+    }
+
   </style>
+  <script>
+    window.addEventListener("DOMContentLoaded", (event) => {
+    	document.getElementById("button").addEventListener("click", function() {
+		  if (document.getElementById("button").style.backgroundColor == "green"){
+			    location.reload();
+		  }
+    	
+      // Change the logo to the "clean and safe" one
+    	document.getElementById("censorLogo").src = "good_website.webp";
+	    document.getElementById("button").textContent = "Page Moderated!";
+	    document.getElementById("button").style.backgroundColor = "green";
+	    });
+    });
+  </script>
 </head>
 <body>
+<<<<<<< HEAD:app/src/popup.html
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <button id="scrapeButton">Scrape Page</button>
   <input type="text" id="blackoutWordInput" placeholder="Enter word to blackout">
   <button id="blackoutButton">Blackout Words</button>
   <div id="result"></div>
+=======
+  <button id="button">Moderate Page</button> 
+  <div id="logoContainer">
+  <img src="bad_website.webp" id="censorLogo"></img>
+  </div>
+>>>>>>> main:app/popup.html
   <script src="dist/popup.js"></script>
 </body>
 </html>
-
