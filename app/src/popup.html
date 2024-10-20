@@ -55,34 +55,12 @@
     }
 
   </style>
-  <script>
-    window.addEventListener("DOMContentLoaded", (event) => {
-    	document.getElementById("button").addEventListener("click", function() {
-		  if (document.getElementById("button").style.backgroundColor == "green"){
-			    location.reload();
-		  }
-    	
-      // Change the logo to the "clean and safe" one
-    	document.getElementById("censorLogo").src = "good_website.webp";
-	    document.getElementById("button").textContent = "Page Moderated!";
-	    document.getElementById("button").style.backgroundColor = "green";
-	    });
-    });
-  </script>
 </head>
 <body>
-<<<<<<< HEAD:app/src/popup.html
-  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  <button id="scrapeButton">Scrape Page</button>
-  <input type="text" id="blackoutWordInput" placeholder="Enter word to blackout">
-  <button id="blackoutButton">Blackout Words</button>
-  <div id="result"></div>
-=======
   <button id="button">Moderate Page</button> 
   <div id="logoContainer">
   <img src="bad_website.webp" id="censorLogo"></img>
   </div>
->>>>>>> main:app/popup.html
   <script src="dist/popup.js"></script>
 </body>
 </html>
