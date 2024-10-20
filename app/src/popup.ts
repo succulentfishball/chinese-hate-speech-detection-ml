@@ -21,6 +21,30 @@ document.getElementById('blackoutButton')?.addEventListener('click', () => {
       }
     });
   });
+  
+
+window.addEventListener("DOMContentLoaded", (event: Event) => {
+  const button = document.getElementById("button") as HTMLButtonElement | null;
+  const censorLogo = document.getElementById("censorLogo") as HTMLImageElement | null;
+
+  if (button) {
+      button.addEventListener("click", function() {
+          // Check if the button's background color is green
+          if (button.style.backgroundColor === "green") {
+              location.reload();
+          }
+
+          // Change the logo to the "clean and safe" one
+          if (censorLogo) {
+              censorLogo.src = "good_website.webp";
+          }
+
+          button.textContent = "Page Moderated!";
+          button.style.backgroundColor = "green";
+      });
+  }
+});
+
 
 
 

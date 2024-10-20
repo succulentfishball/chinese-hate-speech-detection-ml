@@ -1,6 +1,6 @@
 {
     "name": "CN Hate Speech Detector",
-    "description": "Block out hate speech",
+    "description": "Censors Mandarin hate speech on all websites.",
     "version": "1.0",
     "manifest_version": 3,
     "permissions": [

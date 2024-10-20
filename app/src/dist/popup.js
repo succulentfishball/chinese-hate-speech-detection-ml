@@ -23,24 +23,21 @@ var _a;
         }
     });
 });
-// function scrapeAndFilterChinese(): string {
-//   // Scrape the entire HTML content
-//   const htmlContent = document.documentElement.outerHTML;
-//   // Regular expression to match Chinese characters
-//   const chineseCharRegex = /[\u3400-\u4DBF\u4E00-\u9FFF\uF900-\uFAFF\uFF0C\u3002]/g;
-//   // Extract only Chinese characters from the HTML content
-//   const chineseCharacters = htmlContent.match(chineseCharRegex)?.join('') || '';
-//   return chineseCharacters;
-// }
 window.addEventListener("DOMContentLoaded", (event) => {
-    document.getElementById("button").addEventListener("click", function() {
-        if (document.getElementById("button").style.backgroundColor == "green"){
-            location.reload();
-        }
-    	
-        // Change the logo to the "clean and safe" one
-        document.getElementById("censorLogo").src = "good_website.webp";
-	    document.getElementById("button").textContent = "Page Moderated!";
-	    document.getElementById("button").style.backgroundColor = "green";
-	});
+    const button = document.getElementById("button");
+    const censorLogo = document.getElementById("censorLogo");
+    if (button) {
+        button.addEventListener("click", function () {
+            // Check if the button's background color is green
+            if (button.style.backgroundColor === "green") {
+                location.reload();
+            }
+            // Change the logo to the "clean and safe" one
+            if (censorLogo) {
+                censorLogo.src = "good_website.webp";
+            }
+            button.textContent = "Page Moderated!";
+            button.style.backgroundColor = "green";
+        });
+    }
 });
