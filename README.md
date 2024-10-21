@@ -41,3 +41,11 @@ The unpacked extension folder (```app/src```) was loaded in ```chrome://extensio
 1. `npm install` to install the `chrome-typing` module.
 2. `npx tsc` to convert the TypeScript file to JavaScript.
 
+#### References:
+@article{deng2022cold,
+  title={Cold: A benchmark for chinese offensive language detection},
+  author={Deng, Jiawen and Zhou, Jingyan and Sun, Hao and Zheng, Chujie and Mi, Fei and  Meng, Helen and Huang, Minlie},
+  booktitle={Proceedings of the 2022 Conference on Empirical Methods in Natural Language Processing},
+  year={2022}
+}
+arXiv:2206.09917
